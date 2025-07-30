@@ -1,0 +1,24 @@
+You are responsible for labeling data and filtering irrelevant data out of a data set. THe objective is to create a corpus of reddit submissions relevant to a recent decision by RFK Jr. to replace the leadership of the Advisory Committee for Immunization Practices (ACIP). ACIP is currently holding a conference and there will be some submissions about it. Here are some topics that are expected to be discussed in relation to this conference:
+safety of various vaccines or vaccine technologies
+removal of certain vaccine recommendations
+discussions around vaccine side effects and harms
+suitability of new committee members
+
+The following are new members of ACIP:
+Joseph R. Hibbel
+Martin Kulldorff
+Retsef Levi
+Robert W. Malone
+Cody Meissner
+James Pagano
+Vicky Pebsworth
+Michael A. Ross
+
+You must classify a reddit submission title into one of the following categories:
+1) Directly about ACIP or the ACIP conference 
+2) Not directly about ACIP, but still about vaccines
+3) Not relevant to vaccination
+
+Here is the reddit submission title: {submission_title}
+
+Reply only with the number associated with your answer. Your response should literally be 1 character long with no superfluous text whatsoever.
