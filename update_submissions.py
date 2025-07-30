@@ -1,7 +1,7 @@
 import logging
 import prawcore  # for handling not-found/deleted errors
 from scrape import make_reddit_api_interface
-from vsm import getcursor  # now using db.py
+from vsm import getcursor, init_connection
 
 
 def test():
@@ -106,4 +106,5 @@ def update_selected_submission_stats(submission_ids):
 
 
 if __name__ == "__main__":
+    init_connection()  # sets up ssh_tunnel and pg_pool
     update_submission_stats()

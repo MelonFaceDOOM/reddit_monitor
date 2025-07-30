@@ -1,11 +1,14 @@
+from sshtunnel import SSHTunnelForwarder
+from psycopg2.pool import ThreadedConnectionPool
 from collections import defaultdict
+import os
 import atexit
 from contextlib import contextmanager
-from psycopg2.pool import ThreadedConnectionPool
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
+
+USE_SSH_TUNNEL = os.environ.get("USE_SSH_TUNNEL") == "1"
 
 AZURE_CREDENTIALS = {
     "host": os.environ["PGHOST"],
@@ -15,18 +18,46 @@ AZURE_CREDENTIALS = {
     "database": os.environ["PGDATABASE"],
 }
 
-pg_pool = ThreadedConnectionPool(
-    minconn=1,
-    maxconn=10,
-    **AZURE_CREDENTIALS
-)
+SSH_TUNNEL_CREDENTIALS = {
+    'ssh_host': os.environ['SSH_HOST'],
+    'ssh_username': os.environ['SSH_USERNAME'],
+    'ssh_pkey': os.environ['SSH_PKEY']
+}
 
+tunnel = None
+pg_pool = None
+
+def init_connection(force_tunnel=False):
+    global tunnel, pg_pool
+
+    if USE_SSH_TUNNEL or force_tunnel:
+        tunnel = SSHTunnelForwarder(
+            remote_bind_address=(AZURE_CREDENTIALS['host'], int(AZURE_CREDENTIALS['port'])),
+            local_bind_address=('localhost', 5432),
+            **SSH_TUNNEL_CREDENTIALS
+        )
+        tunnel.start()
+        print(f"SSH tunnel established at localhost:{tunnel.local_bind_port}")
+        
+        # update azure credentials with tunnel info
+        AZURE_CREDENTIALS['host'] = 'localhost'
+        AZURE_CREDENTIALS['port'] = tunnel.local_bind_port
+
+    pg_pool = ThreadedConnectionPool(
+        minconn=1,
+        maxconn=10,
+        **AZURE_CREDENTIALS
+    )
 
 @atexit.register
-def close_pg_pool():
+def cleanup():
+    global tunnel, pg_pool
     if pg_pool:
         print("Closing PostgreSQL connection pool...")
         pg_pool.closeall()
+    if tunnel:
+        print("SSH tunnel closed.")
+        tunnel.stop()
 
 
 @contextmanager

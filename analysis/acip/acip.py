@@ -5,7 +5,7 @@ import datetime
 import pandas as pd
 from collections import defaultdict
 from cgpt import single_prompt_response
-from vsm import getcursor
+from vsm import getcursor, init_connection
 from update_submissions import update_selected_submission_stats
 from utils import dump_submissions, load_submissions
 from analysis.analyse import save_submissions_per_day, save_num_comments_per_day, save_score_per_day, save_top_submissions, get_top_subreddits_by_total_comments, get_top_subreddits_by_submission_count
@@ -237,3 +237,7 @@ def get_submissions_for_other_vaccine_concepts(cur):
             data.setdefault(name, [])
 
     return dict(data)
+
+if __name__ == "__main__":
+    init_connection()
+    # do whatever

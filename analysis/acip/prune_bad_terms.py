@@ -1,6 +1,6 @@
 import pandas as pd
-from db import getcursor
-from analysis.acip.acip import load_submissions, CGPT_RESPONSE_FILE
+from vsm import getcursor, init_connection
+from analysis.acip import load_submissions, CGPT_RESPONSE_FILE
 
 
 def response_summary(output_path="analysis/acip/search_term_relevance.csv"):
@@ -144,3 +144,7 @@ def identify_low_pos_terms():
                 low_pos_terms.append(search_term)
     with open("low_pos_terms.txt", "w") as f:
         f.write("\n".join(low_pos_terms))
+
+if __name__ == "__main__":
+    init_connection()
+    # do whatever

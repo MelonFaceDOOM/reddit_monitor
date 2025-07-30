@@ -6,7 +6,7 @@ import math
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
-from vsm import getcursor, get_recent_submissions_for_all_terms, get_recent_submimssions_for_term
+from vsm import init_connection, getcursor, get_recent_submissions_for_all_terms, get_recent_submimssions_for_term
 from scrape import scrape_submissions_to_db
 
 
@@ -42,7 +42,7 @@ class ScrapeScheduler:
                 self.task_set.add(term)
 
     def setup(self):
-        logging.info("beginning setup for ScrapeScheduler")
+        logging.info("beginning setup for ScrapeScheduler. This can take a couple minutes as submissions from each query are pulled to calculate submission frequency")
         now = time.time()
         with getcursor() as cur:
             terms_and_intervals = get_all_terms_and_intervals(cur)
@@ -103,6 +103,7 @@ def get_interval_for_term(cur, term):
 
 
 def get_all_terms_and_intervals(cur):
+    # TODO should optimize this since it takes like 5m. is it the join statement in the query?
     terms = get_recent_submissions_for_all_terms(cur)
     search_terms_and_intervals = []
     for term, submissions in terms.items():
@@ -132,5 +133,6 @@ def calculate_scrapes_per_day(recent_submissions):
 
 
 if __name__ == "__main__":
+    init_connection()  # sets up ssh_tunnel and pg_pool
     scheduler = ScrapeScheduler()
     scheduler.scrape_loop()
