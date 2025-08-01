@@ -5,3 +5,4 @@ plan.txt
 misc/
 .env
 config.py
+venv/

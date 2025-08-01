@@ -77,8 +77,7 @@ class ScrapeScheduler:
             else:
                 self.add_task(term, next_time)
                 sleep_duration = next_time - now
-                logging.info(f"not time yet for {
-                             term}, sleeping for {sleep_duration}s")
+                logging.info(f"not time yet for {term}, sleeping for {sleep_duration}s")
                 time.sleep(sleep_duration)
 
     def scrape_and_reschedule(self, term):

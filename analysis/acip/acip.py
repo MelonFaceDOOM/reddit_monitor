@@ -139,8 +139,7 @@ def update_submissions_in_file():
         df["score"] = df["id"].map(score_map)
         df["num_comments"] = df["id"].map(comments_map)
 
-        print(f"Updated scores and comment counts for {
-              len(rows)} submissions.")
+        print(f"Updated scores and comment counts for {len(rows)} submissions.")
 
         # Save updated file
         df.to_csv(CGPT_RESPONSE_FILE, index=False)

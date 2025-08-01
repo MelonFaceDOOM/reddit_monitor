@@ -54,8 +54,10 @@ def scrape_submissions_to_db(cur, queries):
         )
         result = cur.fetchone()
         if not result:
-            raise ValueError(f"The query '{
-                             query}' does not exist in the DB as a search term and cannot be scraped.")
+            raise ValueError(
+                f"The query '{query}' "
+                "does not exist in the DB as a search term and cannot be scraped."
+            )
         search_term_id = result[0]
 
         # Find existing submissions for that search term
@@ -74,8 +76,10 @@ def scrape_submissions_to_db(cur, queries):
         # Scrape new submissions
         submissions_to_insert = list(get_submissions_until_duplicate(
             reddit, query, existing_submission_ids))
-        logging.info(f"{len(submissions_to_insert)
-                        } submissions found, inserting into db...")
+        logging.info(
+            f"{len(submissions_to_insert)} "
+            "submissions found, inserting into db..."
+        )
         insert_submissions(cur, query, submissions_to_insert)
 
         logging.info(f"Scraping for query '{query}' complete.")
@@ -94,8 +98,9 @@ def scrape_comments(cur, submission_id):
     if not comments:
         logging.info(f"No comments found for submission_id {submission_id}")
         return
-    logging.info(f"Found {len(comments)} comments for submission {
-                 submission_id}")
+    logging.info(
+        f"Found {len(comments)} comments for submission {submission_id}"
+    )
     return comments
 
 
@@ -134,8 +139,10 @@ def insert_submissions(cur, query, submissions):
         ON CONFLICT DO NOTHING
     """
     execute_values(cur, insert_query, submission_rows)
-    logging.info(f"Inserted {len(submission_rows)
-                             } submissions and match rows for query: '{query}'")
+    logging.info(
+        f"Inserted {len(submission_rows)} "
+        f"submissions and match rows for query: '{query}'"
+    )
 
     # Insert into match table
     search_term_id = search_term_row[0]
@@ -188,8 +195,9 @@ def scrape_and_save_submissions_to_file(reddit, query, out_file):
     if os.path.isfile(out_file):
         existing_submissions = read_submissions_from_file(out_file)
         existing_submission_ids = [s["id"] for s in existing_submissions]
-        logging.info(f"Found existing file with {
-                     len(existing_submission_ids)} submissions.")
+        logging.info(
+            f"Found existing file with {len(existing_submission_ids)} submissions."
+        )
 
     with open(out_file, "a+", encoding="utf-8") as f:
         for submission in get_submissions_until_duplicate(
@@ -276,8 +284,9 @@ def get_submissions_until_duplicate(
         # wait is lambda: submission even right? i mean it's been working?
         submission = backoff_api_call(lambda: submission)
         if submission.id in existing_submission_ids:
-            logging.info(f"Stopping: submission ID {
-                         submission.id} already exists.")
+            logging.info(
+                f"Stopping: submission ID {submission.id} already exists."
+                )
             break
         else:
             yield submission
